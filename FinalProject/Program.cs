@@ -17,7 +17,7 @@ using (Zoo z = new())
         Console.WriteLine("3. Move an animal");
         Console.WriteLine("4. Advance time (simulation step)");
         Console.WriteLine("5. Save the zoo");
-        Console.WriteLine("6. Load the zoo");
+        Console.WriteLine("6. Delete the zoo");
         Console.WriteLine("7. Quit (sad face)");
 
         string choice = Console.ReadLine();
@@ -44,10 +44,12 @@ using (Zoo z = new())
 
             case "5":
                 myZoo.SaveZoo();
+                z.SaveChanges();
                 break;
 
             case "6":
                 myZoo.LoadZoo();
+                z.Database.EnsureDeleted();
                 break;
 
             case "7":

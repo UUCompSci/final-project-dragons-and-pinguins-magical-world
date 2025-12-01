@@ -212,7 +212,7 @@ public class Zoo
 
   public void LoadZoo()
   {
-    Console.WriteLine("📂 Loading the zoo from the mysterious database...");
+    Console.WriteLine("📂 Deleting the zoo from the mysterious database...");
   }
 
   public List<Enclosure> GetEnclosures()
