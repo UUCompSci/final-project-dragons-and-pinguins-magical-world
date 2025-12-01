@@ -99,6 +99,17 @@ public class Dragon : Animal
   }
 }
 
+public static class CheckKey
+{
+  public const ConsoleKey _1 = ConsoleKey.D1;
+  public const ConsoleKey _2 = ConsoleKey.D2;
+  public const ConsoleKey _3 = ConsoleKey.D3;
+  public const ConsoleKey _4 = ConsoleKey.D4;
+  public const ConsoleKey _5 = ConsoleKey.D5;
+  public const ConsoleKey _6 = ConsoleKey.D6;
+  public const ConsoleKey _7 = ConsoleKey.D7;
+}
+
 // Kate's part
 public class Enclosure
 {

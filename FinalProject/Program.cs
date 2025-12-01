@@ -20,39 +20,39 @@ using (Zoo z = new())
         Console.WriteLine("6. Delete the zoo");
         Console.WriteLine("7. Quit (sad face)");
 
-        string choice = Console.ReadLine();
-
-        switch (choice)
+        switch (GetKey())
         {
-            case "1":
+            case CheckKey._1:
                 Console.Write("Name your new enclosure: ");
                 string encName = Console.ReadLine();
                 myZoo.AddEnclosure(new Enclosure(encName));
                 break;
 
-            case "2":
-                Console.WriteLine("🚨 Add animal here - partner handles this part!");
+            case CheckKey._2:
+                Console.WriteLine("Would you like to add a dragon 🐉 or a penguin 🐧?");
+                string choice2 = Console.ReadLine();
+
                 break;
 
-            case "3":
+            case CheckKey._3:
                 Console.WriteLine("🐾 Move animal logic placeholder - select animals later.");
                 break;
 
-            case "4":
+            case CheckKey._4:
                 myZoo.AdvanceTime();
                 break;
 
-            case "5":
+            case CheckKey._5:
                 myZoo.SaveZoo();
                 z.SaveChanges();
                 break;
 
-            case "6":
+            case CheckKey._6:
                 myZoo.LoadZoo();
                 z.Database.EnsureDeleted();
                 break;
 
-            case "7":
+            case CheckKey._7:
                 isRunning = false;
                 Console.WriteLine("Exiting zoo simulator. Goodbye! 🐧🔥");
                 break;
@@ -62,4 +62,10 @@ using (Zoo z = new())
                 break;
         }
     }
+}
+
+static ConsoleKey GetKey()
+{
+    ConsoleKey getKey = Console.ReadKey(true).Key;
+    return getKey;
 }
