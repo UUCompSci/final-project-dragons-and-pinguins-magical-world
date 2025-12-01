@@ -8,7 +8,7 @@ public abstract class Animal
   private double _energy;
   private string _mood;
 
-  public abstract void UpdateBehavior();
+  public abstract void Update();
   public double EnergyLevel
   {
     get { return _energy; }
@@ -30,7 +30,7 @@ public class Penguin : Animal
   public int BraveryLevel { get; set; }
   public bool _canLeadGang = false;
 
-  public override void UpdateBehavior()
+  public override void Update()
   {
     int p = Random.Shared.Next(1, 4);
 
@@ -75,7 +75,7 @@ public class Dragon : Animal
   public double _treasureHoardAmount;
   public bool _alert = false;
 
-  public override void UpdateBehavior()
+  public override void Update()
   {
     _alert = false;
     int d = Random.Shared.Next(1, 4);
@@ -87,8 +87,7 @@ public class Dragon : Animal
     }
     else if (d == 2)
     {
-      Console.WriteLine($"{Name} sneezed a puff of fire and singed the fence casuing {FireLevel} points of damage to it!");
-      Enclosure._enclosureHP -= FireLevel;
+      Console.WriteLine($"{Name} sneezed a puff of fire and singed the fence causing some damage.");
     }
     else
     {
