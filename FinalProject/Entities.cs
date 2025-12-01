@@ -9,6 +9,17 @@ public abstract class Animal
   private string _mood;
 
   public abstract void UpdateBehavior();
+  public double EnergyLevel
+  {
+    get { return _energy; }
+    set { _energy = value; }
+  }
+  
+  public string CurrentMood
+    {
+      get { return _mood; }
+      set { _mood = value; }
+    }
 }
 
 public class Penguin : Animal
