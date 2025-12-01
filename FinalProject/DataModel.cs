@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Entities;
 
+// Elena's part
 public class Zoo : DbContext
 {
   public DbSet<Penguin>? Penguins { get; set; }

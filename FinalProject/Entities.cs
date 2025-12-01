@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Entities;
 
+// Elena's part
 public abstract class Animal
 {
   public Guid Id { get; private set; } = Guid.NewGuid();
