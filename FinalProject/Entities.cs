@@ -97,3 +97,126 @@ public class Dragon : Animal
     }
   }
 }
+
+// Kate's part
+public class Enclosure
+{
+  public Guid Id { get; private set; } = Guid.NewGuid();
+  private string enclosureName;
+  private List<Animal> animalSquad;
+
+  public Enclosure(string name)
+  {
+    enclosureName = name;
+    animalSquad = new List<Animal>();
+  }
+
+  public string Name { get { return enclosureName; } }
+
+  public void AddAnimal(Animal critter)
+  {
+    animalSquad.Add(critter);
+    Console.WriteLine($"{critter.Name} has joined {enclosureName}! 🎉");
+  }
+
+  public void RemoveAnimal(Animal critter)
+  {
+    animalSquad.Remove(critter);
+    Console.WriteLine($"{critter.Name} has left {enclosureName}... 😢");
+  }
+
+  //let the animals do their thing
+  public void RunEnclosureStep()
+  {
+    Console.WriteLine($"\nUpdating {enclosureName}...");
+    foreach (Animal critter in animalSquad)
+    {
+      critter.Update(); //polymorphic MAGIC
+    }
+
+    HandleShenanigans();
+  }
+
+  private void HandleShenanigans()
+  {
+    //placeholder for chaos between dragons and penguins
+    if (animalSquad.Count > 1)
+    {
+      Console.WriteLine("Some animal things are happening! 🐧🔥");
+    }
+  }
+
+  public List<Animal> GetAnimals()
+  {
+    return animalSquad;
+  }
+}
+
+//RANDOM EVENTS
+public static class RandomEvents
+{
+  private static Random rng = new Random();
+
+  public static void MaybeTriggerEvent(Enclosure enclosure)
+  {
+    int roll = rng.Next(1, 101); // Roll 1-100
+    if (roll <= 10)
+    {
+      Console.WriteLine($"🐟 Fish Frenzy hits {enclosure.Name}! Penguins are bouncing off the walls!");
+    }
+    else if (roll <= 15)
+    {
+      Console.WriteLine($"🔥 Dragon Fire Cough in {enclosure.Name}! Watch out, penguins!");
+    }
+    //add more ridiculous events here
+  }
+}
+
+//world manager
+public class Zoo
+{
+  private List<Enclosure> allEnclosures;
+
+  public Zoo()
+  {
+    allEnclosures = new List<Enclosure>();
+  }
+
+  public void AddEnclosure(Enclosure e)
+  {
+    allEnclosures.Add(e);
+    Console.WriteLine($"Enclosure {e.Name} has been created! 🏰");
+  }
+
+  public void MoveAnimal(Animal critter, Enclosure from, Enclosure to)
+  {
+    from.RemoveAnimal(critter);
+    to.AddAnimal(critter);
+    Console.WriteLine($"{critter.Name} waddled/flew from {from.Name} to {to.Name}!");
+  }
+
+  public void AdvanceTime()
+  {
+    foreach (Enclosure e in allEnclosures)
+    {
+      e.RunEnclosureStep();
+      RandomEvents.MaybeTriggerEvent(e);
+    }
+  }
+
+  //database magic (placeholder)
+  public void SaveZoo()
+  {
+    Console.WriteLine("💾 Saving the zoo to the mysterious database...");
+  }
+
+  public void LoadZoo()
+  {
+    Console.WriteLine("📂 Loading the zoo from the mysterious database...");
+  }
+
+  public List<Enclosure> GetEnclosures()
+  {
+    return allEnclosures;
+  }
+}
