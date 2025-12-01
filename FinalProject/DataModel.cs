@@ -4,6 +4,7 @@ public class Zoo : DbContext
 {
   public DbSet<Penguin>? Penguins { get; set; }
   public DbSet<Dragon>? Dragons { get; set; }
+  public DbSet<Enclosure> Enclosures { get; set; }
 
   protected override void OnConfiguring(
     DbContextOptionsBuilder optionsBuilder)

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Entities;
+
 public abstract class Animal
 {
   public Guid Id { get; private set; } = Guid.NewGuid();
@@ -14,12 +15,12 @@ public abstract class Animal
     get { return _energy; }
     set { _energy = value; }
   }
-  
+
   public string CurrentMood
-    {
-      get { return _mood; }
-      set { _mood = value; }
-    }
+  {
+    get { return _mood; }
+    set { _mood = value; }
+  }
 }
 
 public class Penguin : Animal
