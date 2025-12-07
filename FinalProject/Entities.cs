@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace Entities
 {
@@ -30,7 +31,7 @@ namespace Entities
             }
             else if (p == 2)
             {
-                Console.WriteLine($"{Name} stole some fish from another penguin! Hunger level decreased!"); //what a theif
+                Console.WriteLine($"{Name} stole some fish from another penguin! Hunger level decreased!");
                 HungerLevel -= 1;
             }
             else if (p == 3 && !_canLeadGang)
@@ -80,7 +81,7 @@ namespace Entities
             }
             else
             {
-                Console.WriteLine($"{Name} was angry and roared, causing nearby penguins to panic and flee the scene!"); //that'll scare the fish thief
+                Console.WriteLine($"{Name} was angry and roared, causing nearby penguins to panic and flee the scene!");
                 FrightenLevel += 1;
             }
         }
@@ -194,5 +195,30 @@ namespace Entities
         public void DeleteZoo() => Console.WriteLine("📂 Deleting the zoo...");
 
         public List<Enclosure> GetEnclosures() => allEnclosures;
+
+        //ELENA NEW ADDRANGE IS HERE IF YOURE LOOKING FOR IT
+        public void AddRange(ZooDbContext db)
+        {
+            foreach (var enclosure in allEnclosures)
+            {
+                db.Enclosures.Add(enclosure);
+
+                foreach (var animal in enclosure.GetAnimals())
+                {
+                    switch (animal)
+                    {
+                        case Penguin penguin:
+                            db.Penguins.Add(penguin);
+                            break;
+                        case Dragon dragon:
+                            db.Dragons.Add(dragon);
+                            break;
+                    }
+                }
+            }
+
+            db.SaveChanges();
+            Console.WriteLine("Your zoo has been saved to database! 💾");
+        }
     }
 }
