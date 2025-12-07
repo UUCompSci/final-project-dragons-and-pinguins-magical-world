@@ -6,7 +6,7 @@ namespace Entities
     public abstract class Animal
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
-        public abstract string Name { get; set; }
+        public string Name { get; set; }
         public double EnergyLevel { get; set; }
         public string CurrentMood { get; set; }
 
@@ -15,7 +15,6 @@ namespace Entities
 
     public class Penguin : Animal
     {
-        public override string Name { get; set; }
         public int HungerLevel { get; set; }
         public int MischiefLevel { get; set; }
         public int BraveryLevel { get; set; }
@@ -60,7 +59,6 @@ namespace Entities
 
     public class Dragon : Animal
     {
-        public override string Name { get; set; }
         public int FireLevel { get; set; }
         public int FrightenLevel { get; set; }
         public double TreasureHoardAmount { get; set; }
