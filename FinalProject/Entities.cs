@@ -1,234 +1,200 @@
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using System;
+using System.Collections.Generic;
 
-namespace Entities;
-
-// Elena's part
-public abstract class Animal
+namespace Entities
 {
-  public Guid Id { get; private set; } = Guid.NewGuid();
-  public abstract string Name { get; set; }
-  private double _energy;
-  private string _mood;
-
-  public abstract void Update();
-  public double EnergyLevel
-  {
-    get { return _energy; }
-    set { _energy = value; }
-  }
-
-  public string CurrentMood
-  {
-    get { return _mood; }
-    set { _mood = value; }
-  }
-}
-
-public class Penguin : Animal
-{
-  public override string Name { get; set; }
-  public int HungerLevel { get; set; }
-  public int MischiefLevel { get; set; }
-  public int BraveryLevel { get; set; }
-  public bool _canLeadGang = false;
-
-  public override void Update()
-  {
-    int p = Random.Shared.Next(1, 4);
-
-    if (p == 1)
+    public abstract class Animal
     {
-      Console.WriteLine($"{Name} wandered into a different encloser.");
-    }
-    else if (p == 2)
-    {
-      Console.WriteLine($"{Name} stole some fish from another peguin! Hunger level decreased!");
-      HungerLevel -= 1;
-    }
-    else if (p == 3 & _canLeadGang != true)
-    {
-      Console.WriteLine($"{Name} has formed a mini gang!");
-      _canLeadGang = true;
-    }
-    else
-    {
-      Console.WriteLine($"{Name} and their gang are plotting on how to take over the dragons fishing hole.");
-    }
-  }
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        public abstract string Name { get; set; }
+        public double EnergyLevel { get; set; }
+        public string CurrentMood { get; set; }
 
-  public void Steal(Dragon dragon)
-  {
-    if (BraveryLevel > dragon.FrightenLevel)
-    {
-      Console.Write($"{Name} has stolen fish from {dragon.Name}");
-    }      
-    else
-    {
-      Console.WriteLine("The penguins were to scared to steal from the dragon!");        
-    }
-  }
-}
-
-public class Dragon : Animal
-{
-  public override string Name { get; set; }
-  public int FireLevel { get; set; }
-  public int FrightenLevel { get; set; }
-  public double _treasureHoardAmount;
-  public bool _alert = false;
-
-  public override void Update()
-  {
-    _alert = false;
-    int d = Random.Shared.Next(1, 4);
-
-    if (d == 1)
-    {
-      Console.WriteLine($"{Name} is alert and watchful for intruders.");
-      _alert = true;
-    }
-    else if (d == 2)
-    {
-      Console.WriteLine($"{Name} sneezed a puff of fire and singed the fence causing some damage.");
-    }
-    else
-    {
-      Console.WriteLine($"{Name} was angery and roared causing the nearby penguins to panic and flee!");
-      FrightenLevel += 1;
-    }
-  }
-}
-
-public static class CheckKey
-{
-  public const ConsoleKey _1 = ConsoleKey.D1;
-  public const ConsoleKey _2 = ConsoleKey.D2;
-  public const ConsoleKey _3 = ConsoleKey.D3;
-  public const ConsoleKey _4 = ConsoleKey.D4;
-  public const ConsoleKey _5 = ConsoleKey.D5;
-  public const ConsoleKey _6 = ConsoleKey.D6;
-  public const ConsoleKey _7 = ConsoleKey.D7;
-}
-
-// Kate's part
-public class Enclosure
-{
-  public Guid Id { get; private set; } = Guid.NewGuid();
-  private string enclosureName;
-  private List<Animal> animalSquad;
-
-  public Enclosure(string name)
-  {
-    enclosureName = name;
-    animalSquad = new List<Animal>();
-  }
-
-  public string Name { get { return enclosureName; } }
-
-  public void AddAnimal(Animal critter)
-  {
-    animalSquad.Add(critter);
-    Console.WriteLine($"{critter.Name} has joined {enclosureName}! 🎉");
-  }
-
-  public void RemoveAnimal(Animal critter)
-  {
-    animalSquad.Remove(critter);
-    Console.WriteLine($"{critter.Name} has left {enclosureName}... 😢");
-  }
-
-  //let the animals do their thing
-  public void RunEnclosureStep()
-  {
-    Console.WriteLine($"\nUpdating {enclosureName}...");
-    foreach (Animal critter in animalSquad)
-    {
-      critter.Update(); //polymorphic MAGIC
+        public abstract void Update();
     }
 
-    HandleShenanigans();
-  }
-
-  private void HandleShenanigans()
-  {
-    //placeholder for chaos between dragons and penguins
-    if (animalSquad.Count > 1)
+    public class Penguin : Animal
     {
-      Console.WriteLine("Some animal things are happening! 🐧🔥");
+        public override string Name { get; set; }
+        public int HungerLevel { get; set; }
+        public int MischiefLevel { get; set; }
+        public int BraveryLevel { get; set; }
+        private bool _canLeadGang = false;
+
+        public override void Update()
+        {
+            int p = Random.Shared.Next(1, 4);
+
+            if (p == 1)
+            {
+                Console.WriteLine($"uh oh, {Name} wandered into a different enclosure. that'a a problem...");
+            }
+            else if (p == 2)
+            {
+                Console.WriteLine($"{Name} stole some fish from another penguin! Hunger level decreased!"); //what a theif
+                HungerLevel -= 1;
+            }
+            else if (p == 3 && !_canLeadGang)
+            {
+                Console.WriteLine($"{Name} has formed a  gang! Watch out!");
+                _canLeadGang = true;
+            }
+            else
+            {
+                Console.WriteLine($"{Name} and their gang are plotting to take over the dragon fishing hole.");
+            }
+        }
+
+        public void Steal(Dragon dragon)
+        {
+            if (BraveryLevel > dragon.FrightenLevel)
+            {
+                Console.WriteLine($"{Name} has stolen fish from {dragon.Name}!");
+            }
+            else
+            {
+                Console.WriteLine("The penguins were too scared to steal from the dragon!");
+            }
+        }
     }
-  }
 
-  public List<Animal> GetAnimals()
-  {
-    return animalSquad;
-  }
-}
-
-//RANDOM EVENTS
-public static class RandomEvents
-{
-  private static Random rng = new Random();
-
-  public static void MaybeTriggerEvent(Enclosure enclosure)
-  {
-    int roll = rng.Next(1, 101); // Roll 1-100
-    if (roll <= 10)
+    public class Dragon : Animal
     {
-      Console.WriteLine($"🐟 Fish Frenzy hits {enclosure.Name}! Penguins are bouncing off the walls!");
+        public override string Name { get; set; }
+        public int FireLevel { get; set; }
+        public int FrightenLevel { get; set; }
+        public double TreasureHoardAmount { get; set; }
+        private bool _alert = false;
+
+        public override void Update()
+        {
+            _alert = false;
+            int d = Random.Shared.Next(1, 4);
+
+            if (d == 1)
+            {
+                Console.WriteLine($"{Name} is alert and watchful for intruders.");
+                _alert = true;
+            }
+            else if (d == 2)
+            {
+                Console.WriteLine($"{Name} sneezed a puff of fire and singed the fence causing some damage.");
+            }
+            else
+            {
+                Console.WriteLine($"{Name} was angry and roared, causing nearby penguins to panic and flee the scene!"); //that'll scare the fish thief
+                FrightenLevel += 1;
+            }
+        }
     }
-    else if (roll <= 15)
+
+    public static class CheckKey
     {
-      Console.WriteLine($"🔥 Dragon Fire Cough in {enclosure.Name}! Watch out, penguins!");
+        public const ConsoleKey _1 = ConsoleKey.D1;
+        public const ConsoleKey _2 = ConsoleKey.D2;
+        public const ConsoleKey _3 = ConsoleKey.D3;
+        public const ConsoleKey _4 = ConsoleKey.D4;
+        public const ConsoleKey _5 = ConsoleKey.D5;
+        public const ConsoleKey _6 = ConsoleKey.D6;
+        public const ConsoleKey _7 = ConsoleKey.D7;
     }
-    //add more ridiculous events here
-  }
-}
 
-//world manager
-public class Zoo
-{
-  private List<Enclosure> allEnclosures;
-
-  public Zoo()
-  {
-    allEnclosures = new List<Enclosure>();
-  }
-
-  public void AddEnclosure(Enclosure e)
-  {
-    allEnclosures.Add(e);
-    Console.WriteLine($"Enclosure {e.Name} has been created! 🏰");
-  }
-
-  public void MoveAnimal(Animal critter, Enclosure from, Enclosure to)
-  {
-    from.RemoveAnimal(critter);
-    to.AddAnimal(critter);
-    Console.WriteLine($"{critter.Name} waddled/flew from {from.Name} to {to.Name}!");
-  }
-
-  public void AdvanceTime()
-  {
-    foreach (Enclosure e in allEnclosures)
+    public class Enclosure
     {
-      e.RunEnclosureStep();
-      RandomEvents.MaybeTriggerEvent(e);
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        public string Name { get; private set; }
+        private List<Animal> animalSquad;
+
+        public Enclosure(string name)
+        {
+            Name = name;
+            animalSquad = new List<Animal>();
+        }
+
+        public void AddAnimal(Animal critter)
+        {
+            animalSquad.Add(critter);
+            Console.WriteLine($"{critter.Name} has joined {Name}! 🎉");
+        }
+
+        public void RemoveAnimal(Animal critter)
+        {
+            animalSquad.Remove(critter);
+            Console.WriteLine($"{critter.Name} has left {Name}... 😢 byebye");
+        }
+
+        public void RunEnclosureStep()
+        {
+            Console.WriteLine($"\nUpdating {Name}...");
+            foreach (Animal critter in animalSquad)
+            {
+                critter.Update();
+            }
+            HandleShenanigans();
+        }
+
+        private void HandleShenanigans()
+        {
+            if (animalSquad.Count > 1)
+                Console.WriteLine("Some... intresting animal things are happening 🐧🔥");
+        }
+
+        public List<Animal> GetAnimals() => animalSquad;
     }
-  }
 
-  //database magic (placeholder)
-  public void SaveZoo()
-  {
-    Console.WriteLine("💾 Saving the zoo to the mysterious database...");
-  }
+    public static class RandomEvents
+    {
+        private static Random rng = new Random();
 
-  public void LoadZoo()
-  {
-    Console.WriteLine("📂 Deleting the zoo from the mysterious database...");
-  }
+        public static void MaybeTriggerEvent(Enclosure enclosure)
+        {
+            int roll = rng.Next(1, 101);
+            if (roll <= 10)
+            {
+                Console.WriteLine($"🐟a FISH FRENZY has hit {enclosure.Name}! Penguins have gone crazy!");
+            }
+            else if (roll <= 15)
+            {
+                Console.WriteLine($"🔥 Dragon Fire Cough in {enclosure.Name}! Watch out, little penguins!");
+            }
+        }
+    }
 
-  public List<Enclosure> GetEnclosures()
-  {
-    return allEnclosures;
-  }
+    public class Zoo
+    {
+        private List<Enclosure> allEnclosures;
+
+        public Zoo()
+        {
+            allEnclosures = new List<Enclosure>();
+        }
+
+        public void AddEnclosure(Enclosure e)
+        {
+            allEnclosures.Add(e);
+            Console.WriteLine($"Enclosure {e.Name} has been created! 🏰");
+        }
+
+        public void MoveAnimal(Animal critter, Enclosure from, Enclosure to)
+        {
+            from.RemoveAnimal(critter);
+            to.AddAnimal(critter);
+            Console.WriteLine($"{critter.Name} went from {from.Name} to {to.Name}!");
+        }
+
+        public void AdvanceTime()
+        {
+            foreach (Enclosure e in allEnclosures)
+            {
+                e.RunEnclosureStep();
+                RandomEvents.MaybeTriggerEvent(e);
+            }
+        }
+
+        public void SaveZoo() => Console.WriteLine("💾 Saving the zoo...");
+
+        public void DeleteZoo() => Console.WriteLine("📂 Deleting the zoo...");
+
+        public List<Enclosure> GetEnclosures() => allEnclosures;
+    }
 }

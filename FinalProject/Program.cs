@@ -1,71 +1,116 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Entities;
+﻿using Entities;
 
-using (Zoo z = new())
+class Program
 {
-    bool created = z.Database.EnsureCreated();
-
-    // Kate's part
-    Zoo myZoo = new Zoo();
-    bool isRunning = true;
-
-    while (isRunning)
+    static void Main()
     {
-        Console.WriteLine("\n=== 🐧🔥 DRAGON & PENGUIN ZOO 🐉❄ ===");
-        Console.WriteLine("1. Add a new enclosure");
-        Console.WriteLine("2. Add a new animal");
-        Console.WriteLine("3. Move an animal");
-        Console.WriteLine("4. Advance time (simulation step)");
-        Console.WriteLine("5. Save the zoo");
-        Console.WriteLine("6. Delete the zoo");
-        Console.WriteLine("7. Quit (sad face)");
-
-        switch (GetKey())
+        //core db
+        using (ZooDbContext db = new())
         {
-            case CheckKey._1:
-                Console.Write("Name your new enclosure: ");
-                string encName = Console.ReadLine();
-                myZoo.AddEnclosure(new Enclosure(encName));
-                break;
+           db.Database.EnsureCreated();
 
-            case CheckKey._2:
-                Console.WriteLine("Would you like to add a dragon 🐉 or a penguin 🐧?");
-                string choice2 = Console.ReadLine();
+            //memory simulation
+            Zoo myZoo = new Zoo();
+            bool isRunning = true;
 
-                break;
+            while (isRunning)
+            {
+                Console.WriteLine("\n=== 🐧🔥 DRAGON & PENGUIN ZOO 🐉❄ ===");
+                Console.WriteLine("1. Add a new enclosure");
+                Console.WriteLine("2. Add a new animal");
+                Console.WriteLine("3. Move an animal");
+                Console.WriteLine("4. Advance time (1 step)");
+                Console.WriteLine("5. Save the zoo");
+                Console.WriteLine("6. Delete the zoo");
+                Console.WriteLine("7. Quit (sad face)");
 
-            case CheckKey._3:
-                Console.WriteLine("🐾 Move animal logic placeholder - select animals later.");
-                break;
+                switch (GetKey())
+                {
+                    case CheckKey._1:
+                        Console.Write("Name your new enclosure, choose wisely: ");
+                        string encName = Console.ReadLine();
+                        myZoo.AddEnclosure(new Enclosure(encName));
+                        break;
 
-            case CheckKey._4:
-                myZoo.AdvanceTime();
-                break;
+                    case CheckKey._2:
+                        AddAnimalMenu(myZoo);
+                        break;
 
-            case CheckKey._5:
-                myZoo.SaveZoo();
-                z.SaveChanges();
-                break;
+                    case CheckKey._3:
+                        Console.WriteLine("🐾 m animal logic placeholder - select animals later.");
+                        break;
 
-            case CheckKey._6:
-                myZoo.LoadZoo();
-                z.Database.EnsureDeleted();
-                break;
+                    case CheckKey._4:
+                        myZoo.AdvanceTime();
+                        break;
 
-            case CheckKey._7:
-                isRunning = false;
-                Console.WriteLine("Exiting zoo simulator. Goodbye! 🐧🔥");
-                break;
+                    case CheckKey._5:
+                        db.SaveChanges();
+                        myZoo.SaveZoo();
+                        break;
 
-            default:
-                Console.WriteLine("Oops, invalid choice. Try again! 😅");
-                break;
+                    case CheckKey._6:
+                        db.Database.EnsureDeleted();
+                        myZoo.DeleteZoo();
+                        break;
+
+                    case CheckKey._7:
+                        isRunning = false;
+                        Console.WriteLine("Exiting fabulous zoo simulator. Goodbye! 🐧🔥");
+                        break;
+
+                    default:
+                        Console.WriteLine("Oops, can't do that... Try again! 😅");
+                        break;
+                }
+            }
+        }
+
+        static ConsoleKey GetKey() => Console.ReadKey(true).Key;
+
+        static void AddAnimalMenu(Zoo myZoo)
+        {
+            Console.WriteLine("Add a dragon 🐉 or a penguin 🐧?");
+            string choice = Console.ReadLine()?.ToLower();
+
+            Console.Write("Enter name: ");
+            string name = Console.ReadLine();
+
+            Animal animal = choice switch
+            {
+                "dragon" => new Dragon { Name = name },
+                "penguin" => new Penguin { Name = name },
+                _ => null
+            };
+
+            if (animal == null)
+            {
+                Console.WriteLine("no. you can't do that.");
+                return;
+            }
+
+            Console.WriteLine("Select an enclosure:");
+            var enclosures = myZoo.GetEnclosures();
+            if (enclosures.Count == 0)
+            {
+                Console.WriteLine("no enclosures exist. you have to build one first.");
+                return;
+            }
+
+            for (int i = 0; i < enclosures.Count; i++)
+                Console.WriteLine($"{i + 1}. {enclosures[i].Name}");
+
+            int selected = int.TryParse(Console.ReadLine(), out int val) && val > 0 && val <= enclosures.Count
+                ? val - 1
+                : -1;
+
+            if (selected == -1)
+            {
+                Console.WriteLine("you can't do that.");
+                return;
+            }
+
+            enclosures[selected].AddAnimal(animal);
         }
     }
-}
-
-static ConsoleKey GetKey()
-{
-    ConsoleKey getKey = Console.ReadKey(true).Key;
-    return getKey;
 }
