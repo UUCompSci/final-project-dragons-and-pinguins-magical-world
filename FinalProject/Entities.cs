@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Entities
 {
-    public abstract class baseeEntity
+    public abstract class BaseEntity
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
-        public BaseEntity() { }
+        public BaseEntity() {}
     }
 
-    public abstract class Animal : baseeEntity
+    public abstract class Animal : BaseEntity
     {
         public virtual string Name { get; set; }
         public virtual double EnergyLevel { get; set; }

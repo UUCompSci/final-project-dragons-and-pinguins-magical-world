@@ -8,7 +8,7 @@ class Program
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
         using (ZooDbContext db = new())
-        {
+        { 
             db.Database.EnsureCreated();
 
         Zoo myZoo = new Zoo();
