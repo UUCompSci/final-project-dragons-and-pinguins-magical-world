@@ -34,20 +34,25 @@ namespace Entities
             if (p == 1)
             {
                 Console.WriteLine($"uh oh, {Name} wandered into a different enclosure. that'a a problem...");
+                EnergyLevel -= 1;
+                BraveryLevel += 1;
             }
             else if (p == 2)
             {
                 Console.WriteLine($"{Name} stole some fish from another penguin! Hunger level decreased!");
+                EnergyLevel += 1;
                 HungerLevel -= 1;
             }
             else if (p == 3 && !_canLeadGang)
             {
                 Console.WriteLine($"{Name} has formed a gang! Watch out!");
+                MischiefLevel += 1;
                 _canLeadGang = true;
             }
             else
             {
                 Console.WriteLine($"{Name} and their gang are plotting to take over the dragon fishing hole.");
+                MischiefLevel += 1;
             }
         }
 
@@ -55,7 +60,8 @@ namespace Entities
         {
             if (BraveryLevel > dragon.FrightenLevel)
             {
-                Console.WriteLine($"{Name} has stolen fish from {dragon.Name}!");
+                Console.WriteLine($"{Name} has stolen treasure from {dragon.Name}!");
+                dragon.TreasureHoardAmount -= 1;
             }
             else
             {
@@ -74,16 +80,23 @@ namespace Entities
         public override void Update()
         {
             _alert = false;
-            int d = Random.Shared.Next(1, 4);
+            int d = Random.Shared.Next(1, 5);
 
             if (d == 1)
             {
                 Console.WriteLine($"{Name} is alert and watchful for intruders.");
+                EnergyLevel += 1;
                 _alert = true;
             }
             else if (d == 2)
             {
                 Console.WriteLine($"{Name} sneezed a puff of fire and singed the fence causing some damage.");
+                FireLevel += 1;
+            }
+            else if (d == 3)
+            {
+                Console.WriteLine($"{Name} colected some treasure and put it in their hoard!");
+                TreasureHoardAmount += 1;    
             }
             else
             {

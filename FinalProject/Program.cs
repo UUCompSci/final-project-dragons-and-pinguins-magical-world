@@ -11,18 +11,16 @@ class Program
         { 
             db.Database.EnsureCreated();
 
-        Zoo myZoo = new Zoo();
+            Zoo myZoo = new Zoo();
 
-        //load data from the db
-        var enclosuresFromDb = db.Enclosures
-            .Include(e => e.Animals.OfType<Penguin>())  //load penguin
-            .Include(e => e.Animals.OfType<Dragon>())   //load dragon
-            .ToList();
+            var enclosuresFromDb = db.Enclosures.Include(enclosure => enclosure.Animals).ToList();
 
-        foreach (var enc in enclosuresFromDb)
-        {
-            myZoo.AddEnclosure(enc);
-        }
+            foreach(Enclosure e in enclosuresFromDb)
+            {
+                myZoo.AddEnclosure(e);
+            }
+        
+
 
             bool isRunning = true;
 
@@ -66,7 +64,7 @@ class Program
                         break;
 
                     case CheckKey._5:
-                        myZoo.AddRange(db);
+                        db.SaveChanges();
                         myZoo.SaveZoo();
                         break;
 
