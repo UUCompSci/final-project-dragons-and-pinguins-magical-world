@@ -4,9 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Entities
 {
-    public abstract class Animal
+    public abstract class BaseEntity
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
+        public BaseEntity(){}
+    }
+    public abstract class Animal : BaseEntity
+    {
         public string Name { get; set; }
         public double EnergyLevel { get; set; }
         public string CurrentMood { get; set; }
@@ -98,9 +102,8 @@ namespace Entities
         public const ConsoleKey _7 = ConsoleKey.D7;
     }
 
-    public class Enclosure
+    public class Enclosure : BaseEntity
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
         public string Name { get; private set; }
         private List<Animal> animalSquad;
 

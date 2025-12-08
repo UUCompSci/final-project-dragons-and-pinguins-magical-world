@@ -30,10 +30,12 @@ class Program
                         Console.Write("Name your new enclosure, choose wisely: ");
                         string encName = Console.ReadLine();
                         myZoo.AddEnclosure(new Enclosure(encName));
+                        myZoo.AddRange(db);
                         break;
 
                     case CheckKey._2:
                         AddAnimalMenu(myZoo);
+                        myZoo.AddRange(db);
                         break;
 
                     case CheckKey._3:
@@ -78,8 +80,8 @@ class Program
 
             Animal animal = choice switch
             {
-                "dragon" => new Dragon { Name = name },
-                "penguin" => new Penguin { Name = name },
+                "dragon" => new Dragon { Name = name, CurrentMood = "Calm" },
+                "penguin" => new Penguin { Name = name, CurrentMood = "Calm" },
                 _ => null
             };
 
