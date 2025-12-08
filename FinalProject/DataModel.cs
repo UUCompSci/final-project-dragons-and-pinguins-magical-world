@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Entities;
+using System;//might need to console
+using System.IO;//might need for path
 
 //jimmyfigged with some stuff here
 public class ZooDbContext : DbContext

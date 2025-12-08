@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace Entities
 {
-    public abstract class BaseEntity
+    public abstract class baseeEntity
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
         public BaseEntity() { }
     }
 
-    public abstract class Animal : BaseEntity
+    public abstract class Animal : baseeEntity
     {
         public virtual string Name { get; set; }
         public virtual double EnergyLevel { get; set; }
@@ -106,12 +107,9 @@ namespace Entities
     public class Enclosure : BaseEntity
     {
         public string Name { get; private set; }
+        public virtual ICollection<Animal> Animals { get; set; } // EF Core tracking
 
-        // Changed to ICollection for EF Core relationship tracking
-        public virtual ICollection<Animal> Animals { get; private set; }
-
-        // Parameterless constructor for EF Core
-        private Enclosure()
+        private Enclosure() // Parameterless constructor for EF Core
         {
             Animals = new List<Animal>();
         }
@@ -207,12 +205,12 @@ namespace Entities
 
         public List<Enclosure> GetEnclosures() => allEnclosures;
 
-        //IF YOURE LOOKING FOR ADDRANGE ITS HERE
+        // ef core checking
         public void AddRange(ZooDbContext db)
         {
             foreach (var enclosure in allEnclosures)
             {
-                if (!db.Enclosures.Local.Contains(enclosure))
+                if (!db.Enclosures.Any(e => e.Id == enclosure.Id))
                     db.Enclosures.Add(enclosure);
 
                 foreach (var animal in enclosure.GetAnimals())
@@ -220,11 +218,11 @@ namespace Entities
                     switch (animal)
                     {
                         case Penguin penguin:
-                            if (!db.Penguins.Local.Contains(penguin))
+                            if (!db.Penguins.Any(p => p.Id == penguin.Id))
                                 db.Penguins.Add(penguin);
                             break;
                         case Dragon dragon:
-                            if (!db.Dragons.Local.Contains(dragon))
+                            if (!db.Dragons.Any(d => d.Id == dragon.Id))
                                 db.Dragons.Add(dragon);
                             break;
                     }

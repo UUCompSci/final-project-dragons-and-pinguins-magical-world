@@ -1,17 +1,29 @@
 ﻿using Entities;
+using Microsoft.EntityFrameworkCore;
 
 class Program
 {
     static void Main()
     {
-        //i think this fixes our emoji problem HAHA 🤯🥳🥸😎 EMOJI PARTY
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
         using (ZooDbContext db = new())
         {
             db.Database.EnsureCreated();
 
-            Zoo myZoo = new Zoo();
+        Zoo myZoo = new Zoo();
+
+        //load data from the db
+        var enclosuresFromDb = db.Enclosures
+            .Include(e => e.Animals.OfType<Penguin>())  //load penguin
+            .Include(e => e.Animals.OfType<Dragon>())   //load dragon
+            .ToList();
+
+        foreach (var enc in enclosuresFromDb)
+        {
+            myZoo.AddEnclosure(enc);
+        }
+
             bool isRunning = true;
 
             while (isRunning)
@@ -54,7 +66,7 @@ class Program
                         break;
 
                     case CheckKey._5:
-                        db.SaveChanges();
+                        myZoo.AddRange(db);
                         myZoo.SaveZoo();
                         break;
 
@@ -127,7 +139,7 @@ class Program
         }
 
         enclosures[selected].AddAnimal(animal);
-        myZoo.AddRange(db); //saving to to  our db
+        myZoo.AddRange(db); // Save to database
     }
 
     static void MoveAnimalMenu(Zoo myZoo)
@@ -176,14 +188,18 @@ class Program
         var selectedAnimal = animals[animalIndex];
 
         Console.WriteLine("Select the enclosure to move TO:");
+        var toOptions = new List<Enclosure>();
         for (int i = 0; i < enclosures.Count; i++)
         {
             if (i != fromIndex)
-                Console.WriteLine($"{i + 1}. {enclosures[i].Name}");
+            {
+                Console.WriteLine($"{toOptions.Count + 1}. {enclosures[i].Name}");
+                toOptions.Add(enclosures[i]);
+            }
         }
 
-        int toIndex = int.TryParse(Console.ReadLine(), out int valTo) && valTo > 0 && valTo <= enclosures.Count && valTo != fromIndex
-            ? valTo - 1
+        int toIndex = int.TryParse(Console.ReadLine(), out int valTo) && valTo > 0 && valTo <= toOptions.Count
+            ? toOptions.Count - 1
             : -1;
         if (toIndex == -1)
         {
@@ -191,8 +207,7 @@ class Program
             return;
         }
 
-        var toEnclosure = enclosures[toIndex];
-
+        var toEnclosure = toOptions[toIndex];
         myZoo.MoveAnimal(selectedAnimal, fromEnclosure, toEnclosure);
     }
 }
