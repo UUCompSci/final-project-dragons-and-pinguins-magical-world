@@ -32,7 +32,7 @@ class Program
                 Console.WriteLine("3. Move an animal");
                 Console.WriteLine("4. Wait to advance the time (1 step)");
                 Console.WriteLine("5. Save the zoo");
-                Console.WriteLine("6. Delete the zoo");
+                Console.WriteLine("6. Delete the zoo (and exit the game)");
                 Console.WriteLine("7. Quit game, bye animals...");
 
                 switch (GetKey())
@@ -71,7 +71,7 @@ class Program
                     case CheckKey._6:
                         db.Database.EnsureDeleted();
                         myZoo.DeleteZoo();
-                        break;
+                        return;
 
                     case CheckKey._7:
                         isRunning = false;
