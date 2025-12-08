@@ -7,22 +7,23 @@ namespace Entities
     public abstract class BaseEntity
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
-        public BaseEntity(){}
+        public BaseEntity() { }
     }
+
     public abstract class Animal : BaseEntity
     {
-        public string Name { get; set; }
-        public double EnergyLevel { get; set; }
-        public string CurrentMood { get; set; }
+        public virtual string Name { get; set; }
+        public virtual double EnergyLevel { get; set; }
+        public virtual string CurrentMood { get; set; }
 
         public abstract void Update();
     }
 
     public class Penguin : Animal
     {
-        public int HungerLevel { get; set; }
-        public int MischiefLevel { get; set; }
-        public int BraveryLevel { get; set; }
+        public virtual int HungerLevel { get; set; }
+        public virtual int MischiefLevel { get; set; }
+        public virtual int BraveryLevel { get; set; }
         private bool _canLeadGang = false;
 
         public override void Update()
@@ -40,7 +41,7 @@ namespace Entities
             }
             else if (p == 3 && !_canLeadGang)
             {
-                Console.WriteLine($"{Name} has formed a  gang! Watch out!");
+                Console.WriteLine($"{Name} has formed a gang! Watch out!");
                 _canLeadGang = true;
             }
             else
@@ -64,9 +65,9 @@ namespace Entities
 
     public class Dragon : Animal
     {
-        public int FireLevel { get; set; }
-        public int FrightenLevel { get; set; }
-        public double TreasureHoardAmount { get; set; }
+        public virtual int FireLevel { get; set; }
+        public virtual int FrightenLevel { get; set; }
+        public virtual double TreasureHoardAmount { get; set; }
         private bool _alert = false;
 
         public override void Update()
@@ -105,30 +106,38 @@ namespace Entities
     public class Enclosure : BaseEntity
     {
         public string Name { get; private set; }
-        private List<Animal> animalSquad;
+
+        // Changed to ICollection for EF Core relationship tracking
+        public virtual ICollection<Animal> Animals { get; private set; }
+
+        // Parameterless constructor for EF Core
+        private Enclosure()
+        {
+            Animals = new List<Animal>();
+        }
 
         public Enclosure(string name)
         {
             Name = name;
-            animalSquad = new List<Animal>();
+            Animals = new List<Animal>();
         }
 
         public void AddAnimal(Animal critter)
         {
-            animalSquad.Add(critter);
+            Animals.Add(critter);
             Console.WriteLine($"{critter.Name} has joined {Name}! 🎉");
         }
 
         public void RemoveAnimal(Animal critter)
         {
-            animalSquad.Remove(critter);
+            Animals.Remove(critter);
             Console.WriteLine($"{critter.Name} has left {Name}... 😢 byebye");
         }
 
         public void RunEnclosureStep()
         {
             Console.WriteLine($"\nUpdating {Name}...");
-            foreach (Animal critter in animalSquad)
+            foreach (Animal critter in Animals)
             {
                 critter.Update();
             }
@@ -137,11 +146,11 @@ namespace Entities
 
         private void HandleShenanigans()
         {
-            if (animalSquad.Count > 1)
-                Console.WriteLine("Some... intresting animal things are happening 🐧🔥");
+            if (Animals.Count > 1)
+                Console.WriteLine("Some... interesting animal things are happening 🐧🔥");
         }
 
-        public List<Animal> GetAnimals() => animalSquad;
+        public List<Animal> GetAnimals() => new List<Animal>(Animals);
     }
 
     public static class RandomEvents
@@ -153,7 +162,7 @@ namespace Entities
             int roll = rng.Next(1, 101);
             if (roll <= 10)
             {
-                Console.WriteLine($"🐟a FISH FRENZY has hit {enclosure.Name}! Penguins have gone crazy!");
+                Console.WriteLine($"🐟 A FISH FRENZY has hit {enclosure.Name}! Penguins have gone crazy!");
             }
             else if (roll <= 15)
             {
@@ -194,27 +203,29 @@ namespace Entities
         }
 
         public void SaveZoo() => Console.WriteLine("💾 Saving the zoo...");
-
         public void DeleteZoo() => Console.WriteLine("📂 Deleting the zoo...");
 
         public List<Enclosure> GetEnclosures() => allEnclosures;
 
-        //ELENA NEW ADDRANGE IS HERE IF YOURE LOOKING FOR IT
+        //IF YOURE LOOKING FOR ADDRANGE ITS HERE
         public void AddRange(ZooDbContext db)
         {
             foreach (var enclosure in allEnclosures)
             {
-                db.Enclosures.Add(enclosure);
+                if (!db.Enclosures.Local.Contains(enclosure))
+                    db.Enclosures.Add(enclosure);
 
                 foreach (var animal in enclosure.GetAnimals())
                 {
                     switch (animal)
                     {
                         case Penguin penguin:
-                            db.Penguins.Add(penguin);
+                            if (!db.Penguins.Local.Contains(penguin))
+                                db.Penguins.Add(penguin);
                             break;
                         case Dragon dragon:
-                            db.Dragons.Add(dragon);
+                            if (!db.Dragons.Local.Contains(dragon))
+                                db.Dragons.Add(dragon);
                             break;
                     }
                 }
